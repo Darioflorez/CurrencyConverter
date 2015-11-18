@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/activity_main"
+    tools:context=".MainActivity">
+
+
+    <Spinner
+        android:id="@+id/spinner_master"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="58dp"
+        android:layout_toEndOf="@+id/textView" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinner_slave"
+        android:layout_below="@+id/spinner_master"
+        android:layout_marginTop="56dp"
+        android:layout_toEndOf="@+id/textView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Result:"
+        android:id="@+id/result_textView"
+        android:layout_marginTop="49dp"
+        android:layout_below="@+id/button"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/master_editText"
+        android:layout_alignBottom="@+id/spinner_master"
+        android:layout_toStartOf="@+id/spinner_master" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/slave_editText"
+        android:layout_alignTop="@+id/spinner_slave"
+        android:layout_alignStart="@+id/master_editText" />
+
+    <TextView android:text="@string/number_of_clicks" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView"
+        android:layout_centerVertical="true"
+        android:layout_alignEnd="@+id/button" />
+
+    <Button
+        android:id="@+id/button"
+        android:text="Submit"
+        android:layout_width="50pt"
+        android:layout_height="30pt"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="45dp" />
+
+</RelativeLayout>
