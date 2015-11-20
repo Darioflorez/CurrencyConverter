@@ -10,7 +10,7 @@ public class FileModel {
     private String mDate;
     private List<CurrencyModel> mCurrencies;
 
-    public List<CurrencyModel> getmCurrencies() {
+    public List<CurrencyModel> getCurrencies() {
         return mCurrencies;
     }
 

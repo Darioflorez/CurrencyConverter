@@ -17,6 +17,7 @@ import com.example.dario.currencyconverter.handlers.Converter;
 import com.example.dario.currencyconverter.handlers.FileHandler;
 import com.example.dario.currencyconverter.helper.SpinnerAdapterFactory;
 import com.example.dario.currencyconverter.models.CurrencyModel;
+import com.example.dario.currencyconverter.models.FileModel;
 
 import java.util.List;
 
@@ -25,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = ">>>>>>>>>>>>>>" + MainActivity.class.getSimpleName();
 
+    private static final String READ = "read";
+    private static final String WRITE = "write";
     private static final String FILE_NAME = "currency";
     private static final String  URL = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
     private Spinner masterSpinner; //ArrayList av currencyModel
@@ -33,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText slaveEditText; //String
     private Button button;
     private List<CurrencyModel> currencyList;
+    private FileModel file;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,16 +63,13 @@ public class MainActivity extends AppCompatActivity {
         xmlParser.execute(FILE_NAME);
 
         /*Read the local file that contains the information about the currencies*/
-        currencyList = FileHandler.newCurrencyList(FILE_NAME, this);
-        if(currencyList != null) {
-            bindListeners();
-            Log.d(LOG_TAG, "Currency: " + currencyList.get(0).getCurrency());
-        }
-        else
-            Log.d(LOG_TAG, "Currency List not created");
+        FileHandler fileHandler = new FileHandler(FILE_NAME, this);
+        fileHandler.execute(READ);
     }
 
-    private void bindListeners(){
+    public void bindListeners(){
+        currencyList = file.getCurrencies();
+        Log.d(LOG_TAG, "Currency: " + currencyList.get(0).getCurrency());
         button.setOnClickListener(new OnButtonClickListener());
 
         ArrayAdapter<String> adapter = SpinnerAdapterFactory.newAdapter(this,currencyList);
@@ -111,5 +112,13 @@ public class MainActivity extends AppCompatActivity {
             );
             slaveEditText.setText(result);
         }
+    }
+
+    public FileModel getFile() {
+        return file;
+    }
+
+    public void setFile(FileModel file) {
+        this.file = file;
     }
 }
