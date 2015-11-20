@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText slaveEditText; //String
     private Button button;
     private List<CurrencyModel> currencyList;
-    private FileModel file;
+    private FileModel fileModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,17 +58,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onStart(){
         super.onStart();
-        /*Parse XML and write important information into a private file*/
+        readFile();
+        /*Parse XML and write important information into a private fileModel*/
         XMLParser xmlParser = new XMLParser(URL,this);
         xmlParser.execute(FILE_NAME);
+    }
 
-        /*Read the local file that contains the information about the currencies*/
-        FileHandler fileHandler = new FileHandler(FILE_NAME, this);
-        fileHandler.execute(READ);
+    public void readFile(){
+        /*Read the local fileModel that contains the information about the currencies*/
+        FileHandler.read(FILE_NAME, this);
+    }
+
+    public void writeToFile(){
+        FileHandler.write(FILE_NAME, fileModel, this);
+    }
+
+    public void updateFile(){
     }
 
     public void bindListeners(){
-        currencyList = file.getCurrencies();
+        currencyList = fileModel.getCurrencies();
         Log.d(LOG_TAG, "Currency: " + currencyList.get(0).getCurrency());
         button.setOnClickListener(new OnButtonClickListener());
 
@@ -114,11 +123,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public FileModel getFile() {
-        return file;
+    public FileModel getFileModel() {
+        return fileModel;
     }
 
-    public void setFile(FileModel file) {
-        this.file = file;
+    public void setFileModel(FileModel fileModel) {
+        this.fileModel = fileModel;
     }
 }

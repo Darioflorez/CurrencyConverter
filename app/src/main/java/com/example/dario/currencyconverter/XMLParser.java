@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.dario.currencyconverter.models.CurrencyModel;
+import com.example.dario.currencyconverter.models.FileModel;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -20,32 +21,31 @@ import java.util.List;
 /**
  * Created by Dario on 2015-11-17.
  */
-public class XMLParser  extends AsyncTask<String,Void,String> {
+public class XMLParser  extends AsyncTask<String,Void,FileModel> {
 
     private final String LOG_TAG = ">>>>>>>>>>>>>>" + XMLParser.class.getSimpleName();
     private static final String CUBE = "cube";
     private String mDate;
     private List<CurrencyModel> mCurrencies;
 
-    private Context mContext;
+    private MainActivity mContext;
     private String mSiteURL;
 
-    public XMLParser(String siteURL, Context context){
+    public XMLParser(String siteURL, MainActivity context){
         mCurrencies = new ArrayList<>();
         mSiteURL = siteURL;
         mContext = context;
     }
 
     @Override
-    protected String doInBackground(String... params) {
+    protected FileModel doInBackground(String... params) {
 
         if(params.length != 1){
             return null;
         }
-        String FILE_NAME = params[0];
         HttpURLConnection http = null;
         InputStream xmlStream = null;
-        BufferedOutputStream bos = null;
+        FileModel fileModel = null;
         try{
             URL url = new URL(mSiteURL);
 
@@ -89,17 +89,12 @@ public class XMLParser  extends AsyncTask<String,Void,String> {
 
                 parseEvent = xmlParser.next();
             }
+            /*Create object from parse date*/
+            fileModel = new FileModel();
+            fileModel.setDate(mDate);
+            fileModel.setCurrencies(mCurrencies);
+            Log.d(LOG_TAG, "Date: " + fileModel.getDate()+"<<<<<<<<<<<<<<<<<<<<<<<");
 
-            /* OutputStream to write to file */
-            FileOutputStream fos = mContext.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
-            bos = new BufferedOutputStream(fos);
-            Log.d(LOG_TAG, "Buffer to write to file opened!");
-            bos.write(mDate.getBytes());
-            for (CurrencyModel currency: mCurrencies) {
-                bos.write(currency.toString().getBytes());
-                Log.d(LOG_TAG, currency.toString());
-            }
-            Log.d(LOG_TAG, "File read successfully!");
         }catch (Exception e){
             Log.d(LOG_TAG, "ERROR: ");
             Log.d(LOG_TAG, e.getMessage());
@@ -116,16 +111,14 @@ public class XMLParser  extends AsyncTask<String,Void,String> {
                     e.printStackTrace();
                 }
             }
-            if(bos!=null){
-                try {
-                    bos.close();
-                    Log.d(LOG_TAG, "Operation Success!!");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
-        return null;
+        return fileModel;
+    }
+
+    @Override
+    protected void onPostExecute(FileModel result) {
+        mContext.setFileModel(result);
+        mContext.writeToFile();
     }
 
     private void parseAttribute(XmlPullParser xmlParser) {
@@ -141,7 +134,7 @@ public class XMLParser  extends AsyncTask<String,Void,String> {
         String date = xmlParser.getAttributeValue(null, "time");
         if(date != null){
             Log.d(LOG_TAG, "Date: " + date);
-            mDate = date+"//";
+            mDate = date;
         }
 
     }
