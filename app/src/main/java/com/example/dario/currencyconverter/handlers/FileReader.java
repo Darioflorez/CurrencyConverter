@@ -9,10 +9,13 @@ import com.example.dario.currencyconverter.models.CurrencyModel;
 import com.example.dario.currencyconverter.models.FileModel;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,16 +41,35 @@ public class FileReader extends AsyncTask<String,Void,FileModel> {
 
     @Override
     protected void onPostExecute(FileModel result) {
-        mContext.setFileModel(result);
-        mContext.bindListeners();
+        if(result!=null){
+            /*Update the model in mainActivity*/
+            mContext.setFileModel(result);
+            /*Compare the last download date*/
+            Date today = new Date();
+            SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
+            String date = ft.format(today);
+            Log.d(LOG_TAG, date + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+            if(result.getDate().equals(date)){
+                /*If up to date. Start app*/
+                mContext.bindListeners();
+                Log.d(LOG_TAG, date + "  EQUAL  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+            } else {
+                /*Update the file and then start the app*/
+                mContext.updateFileFromXML();
+            }
+        }else {
+            /*The file does not exist so create one*/
+            Log.d(LOG_TAG, "FILE_NOT_FOUND");
+            mContext.createFileFromXML();
+        }
     }
 
     private FileModel read(String fileName, Context context){
 
         FileModel file = null;
         BufferedReader reader = null;
+        /*Read data from the file*/
         try{
-            /*Read data from the file*/
             InputStream is = context.openFileInput(fileName);
             reader = new BufferedReader(new InputStreamReader(is));
             String line = reader.readLine();
@@ -70,7 +92,8 @@ public class FileReader extends AsyncTask<String,Void,FileModel> {
             /*Set the currencies in the file object*/
             file.setCurrencies(currencyList);
             Log.d(LOG_TAG, "Operation success");
-        }catch(Exception e){
+        }
+        catch(Exception e){
             Log.d(LOG_TAG,"ERROR: " + e.getMessage());
             return null;
         }finally {

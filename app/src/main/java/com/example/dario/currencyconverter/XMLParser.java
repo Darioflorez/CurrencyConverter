@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.dario.currencyconverter.helper.Printer;
 import com.example.dario.currencyconverter.models.CurrencyModel;
 import com.example.dario.currencyconverter.models.FileModel;
 
@@ -40,9 +41,6 @@ public class XMLParser  extends AsyncTask<String,Void,FileModel> {
     @Override
     protected FileModel doInBackground(String... params) {
 
-        if(params.length != 1){
-            return null;
-        }
         HttpURLConnection http = null;
         InputStream xmlStream = null;
         FileModel fileModel = null;
@@ -98,6 +96,7 @@ public class XMLParser  extends AsyncTask<String,Void,FileModel> {
         }catch (Exception e){
             Log.d(LOG_TAG, "ERROR: ");
             Log.d(LOG_TAG, e.getMessage());
+            return null;
         }
         finally {
             if(http!=null){
@@ -117,8 +116,12 @@ public class XMLParser  extends AsyncTask<String,Void,FileModel> {
 
     @Override
     protected void onPostExecute(FileModel result) {
-        mContext.setFileModel(result);
-        mContext.writeToFile();
+        if(result!=null){
+            mContext.setFileModel(result);
+            mContext.writeToFile();
+        }else {
+            Log.d(LOG_TAG, "Error when parsing XML");
+        }
     }
 
     private void parseAttribute(XmlPullParser xmlParser) {

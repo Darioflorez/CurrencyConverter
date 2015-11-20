@@ -62,6 +62,7 @@ public class FileWriter extends AsyncTask<String,Void,Boolean> {
 
     @Override
     protected void onPostExecute(Boolean result) {
-
+        /*Update the model in mainActivity*/
+        mContext.bindListeners();
     }
 }

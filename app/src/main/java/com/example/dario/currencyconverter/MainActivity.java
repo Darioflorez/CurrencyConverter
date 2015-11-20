@@ -1,9 +1,11 @@
 package com.example.dario.currencyconverter;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Menu;
@@ -15,6 +17,7 @@ import android.widget.Spinner;
 
 import com.example.dario.currencyconverter.handlers.Converter;
 import com.example.dario.currencyconverter.handlers.FileHandler;
+import com.example.dario.currencyconverter.helper.Printer;
 import com.example.dario.currencyconverter.helper.SpinnerAdapterFactory;
 import com.example.dario.currencyconverter.models.CurrencyModel;
 import com.example.dario.currencyconverter.models.FileModel;
@@ -51,17 +54,12 @@ public class MainActivity extends AppCompatActivity {
         slaveSpinner = (Spinner)findViewById(R.id.slave_spinner);
         masterEditText = (EditText)findViewById(R.id.master_editText);
         slaveEditText = (EditText)findViewById(R.id.slave_editText);
-
-
     }
 
     @Override
     public void onStart(){
         super.onStart();
         readFile();
-        /*Parse XML and write important information into a private fileModel*/
-        XMLParser xmlParser = new XMLParser(URL,this);
-        xmlParser.execute(FILE_NAME);
     }
 
     public void readFile(){
@@ -69,16 +67,40 @@ public class MainActivity extends AppCompatActivity {
         FileHandler.read(FILE_NAME, this);
     }
 
+    public void createFileFromXML(){
+        /*Parse XML and write important information into a private fileModel*/
+        if(isNetworkAvailable()){
+            XMLParser xmlParser = new XMLParser(URL,this);
+            xmlParser.execute();
+        }else {
+            Printer.showToast("No network connection available", this);
+        }
+    }
+
+    public void updateFileFromXML(){
+        if(isNetworkAvailable()){
+            XMLParser xmlParser = new XMLParser(URL,this);
+            xmlParser.execute();
+        }else {
+            bindListeners();
+            Printer.showToast("No network connection available. Currencies out of date!", this);
+        }
+    }
+
     public void writeToFile(){
         FileHandler.write(FILE_NAME, fileModel, this);
     }
 
-    public void updateFile(){
+    //Helper method to determine if Internet connection is available.
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     public void bindListeners(){
         currencyList = fileModel.getCurrencies();
-        Log.d(LOG_TAG, "Currency: " + currencyList.get(0).getCurrency());
         button.setOnClickListener(new OnButtonClickListener());
 
         ArrayAdapter<String> adapter = SpinnerAdapterFactory.newAdapter(this,currencyList);
@@ -121,10 +143,6 @@ public class MainActivity extends AppCompatActivity {
             );
             slaveEditText.setText(result);
         }
-    }
-
-    public FileModel getFileModel() {
-        return fileModel;
     }
 
     public void setFileModel(FileModel fileModel) {
