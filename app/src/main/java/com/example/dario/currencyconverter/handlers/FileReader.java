@@ -5,11 +5,11 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.dario.currencyconverter.MainActivity;
+import com.example.dario.currencyconverter.helper.Printer;
 import com.example.dario.currencyconverter.models.CurrencyModel;
 import com.example.dario.currencyconverter.models.FileModel;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -48,13 +48,16 @@ public class FileReader extends AsyncTask<String,Void,FileModel> {
             Date today = new Date();
             SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
             String date = ft.format(today);
+            //String date = "2015-11-20";
             Log.d(LOG_TAG, date + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
             if(result.getDate().equals(date)){
                 /*If up to date. Start app*/
                 mContext.bindListeners();
+                Printer.showToast("Currencies up to date", mContext);
                 Log.d(LOG_TAG, date + "  EQUAL  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
             } else {
                 /*Update the file and then start the app*/
+                Printer.showToast("Currencies have to be updated. Wait a minute", mContext);
                 mContext.updateFileFromXML();
             }
         }else {
@@ -83,7 +86,6 @@ public class FileReader extends AsyncTask<String,Void,FileModel> {
 
             /*Fill the lis of currencies*/
             List<CurrencyModel> currencyList = new ArrayList<>();
-            currencyList.add(new CurrencyModel("EUR", "1"));
             for(int i = 1; i<rowData.length; i++){
                 String[] currentCurrency = rowData[i].split("::");
                 currencyList.add(new CurrencyModel(currentCurrency[0], currentCurrency[1]));

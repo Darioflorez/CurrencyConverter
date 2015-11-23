@@ -45,6 +45,7 @@ public class XMLParser  extends AsyncTask<String,Void,FileModel> {
         InputStream xmlStream = null;
         FileModel fileModel = null;
         try{
+            mCurrencies.add(new CurrencyModel("EUR", "1"));
             URL url = new URL(mSiteURL);
 
             /* Open a connection to that URL. */
@@ -129,7 +130,7 @@ public class XMLParser  extends AsyncTask<String,Void,FileModel> {
         String currency = xmlParser.getAttributeValue(null, "currency");
         String rate = xmlParser.getAttributeValue(null, "rate");
         if( (currency != null) && (rate != null)){
-            Log.d(LOG_TAG, "Currency: "+currency + " Rate: " + rate );
+            //Log.d(LOG_TAG, "Currency: "+currency + " Rate: " + rate );
             CurrencyModel currencyModel = new CurrencyModel(currency, rate);
             mCurrencies.add(currencyModel);
             return;

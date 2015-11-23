@@ -38,9 +38,9 @@
         android:layout_toEndOf="@+id/button" />
 
     <Spinner
+        android:id="@+id/slave_spinner"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/slave_spinner"
         android:layout_below="@+id/slave_editText"
         android:layout_toEndOf="@+id/button" />
 

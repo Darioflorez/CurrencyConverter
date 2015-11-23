@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.dario.currencyconverter.MainActivity;
+import com.example.dario.currencyconverter.helper.Printer;
 import com.example.dario.currencyconverter.models.CurrencyModel;
 import com.example.dario.currencyconverter.models.FileModel;
 
@@ -63,6 +64,9 @@ public class FileWriter extends AsyncTask<String,Void,Boolean> {
     @Override
     protected void onPostExecute(Boolean result) {
         /*Update the model in mainActivity*/
-        mContext.bindListeners();
+        if(result){
+            Printer.showToast("Currencies updated successfully", mContext);
+            mContext.bindListeners();
+        }
     }
 }

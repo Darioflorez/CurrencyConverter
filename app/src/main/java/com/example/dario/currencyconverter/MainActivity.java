@@ -29,8 +29,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = ">>>>>>>>>>>>>>" + MainActivity.class.getSimpleName();
 
-    private static final String READ = "read";
-    private static final String WRITE = "write";
     private static final String FILE_NAME = "currency";
     private static final String  URL = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
     private Spinner masterSpinner; //ArrayList av currencyModel
@@ -62,11 +60,12 @@ public class MainActivity extends AppCompatActivity {
         readFile();
     }
 
-    public void readFile(){
+    private void readFile(){
         /*Read the local fileModel that contains the information about the currencies*/
         FileHandler.read(FILE_NAME, this);
     }
 
+    //Callback method
     public void createFileFromXML(){
         /*Parse XML and write important information into a private fileModel*/
         if(isNetworkAvailable()){
@@ -76,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             Printer.showToast("No network connection available", this);
         }
     }
-
+    //Callback method
     public void updateFileFromXML(){
         if(isNetworkAvailable()){
             XMLParser xmlParser = new XMLParser(URL,this);
@@ -86,9 +85,19 @@ public class MainActivity extends AppCompatActivity {
             Printer.showToast("No network connection available. Currencies out of date!", this);
         }
     }
-
+    //Callback method
     public void writeToFile(){
         FileHandler.write(FILE_NAME, fileModel, this);
+    }
+    //Callback method
+    public void bindListeners(){
+        currencyList = fileModel.getCurrencies();
+        button.setOnClickListener(new OnButtonClickListener());
+
+        ArrayAdapter<String> masterAdapter = SpinnerAdapterFactory.newAdapter(this,currencyList);
+        ArrayAdapter<String> slaveAdapter = SpinnerAdapterFactory.newAdapter(this,currencyList);
+        masterSpinner.setAdapter(masterAdapter);
+        slaveSpinner.setAdapter(slaveAdapter);
     }
 
     //Helper method to determine if Internet connection is available.
@@ -97,15 +106,6 @@ public class MainActivity extends AppCompatActivity {
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    public void bindListeners(){
-        currencyList = fileModel.getCurrencies();
-        button.setOnClickListener(new OnButtonClickListener());
-
-        ArrayAdapter<String> adapter = SpinnerAdapterFactory.newAdapter(this,currencyList);
-        masterSpinner.setAdapter(adapter);
-        slaveSpinner.setAdapter(adapter);
     }
 
     @Override
@@ -135,10 +135,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
 
+            String userInput = masterEditText.getText().toString();
+            String rateMaster = masterSpinner.getSelectedItem().toString();
+            String rateSlave = slaveSpinner.getSelectedItem().toString();
             String result = Converter.convert(
-                    masterEditText.getText().toString(),
-                    masterSpinner.getSelectedItem().toString(),
-                    slaveSpinner.getSelectedItem().toString(),
+                    userInput,
+                    rateMaster,
+                    rateSlave,
                     currencyList
             );
             slaveEditText.setText(result);
